@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  client:
+    image: monum/corpvalet-client:latest
+    ports:
+      - "5173:5173"  # Map Vite's default port to localhost
+    environment:
+      - CHOKIDAR_USEPOLLING=true  # Ensures live reloading works in Docker
+    networks:
+      - app-network  # Shared network for client-server communication
+    expose:
+      - "5173"
+    restart: always  # Ensure client restarts on failure
+
+  server:
+    image: monum/corpvalet-server:latest
+    ports:
+      - "3000:3000"  # Map Express server port to localhost
+    networks:
+      - app-network  # Shared network for client-server communication
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4  # Optional: Add Google DNS for reliable resolution
+    expose:
+      - "3000"
+    restart: always  # Ensure server restarts on failure
+
+networks:
+  app-network:
+    driver: bridge
